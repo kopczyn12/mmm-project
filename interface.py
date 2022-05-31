@@ -8,6 +8,7 @@ from matplotlib.figure import Figure
 from matplotlib import style
 style.use('ggplot')
 from app import *
+from model import Model
 
 
 class Interface(tk.Frame):
@@ -91,7 +92,3 @@ class Interface(tk.Frame):
         self.photo_of_schema = tk.PhotoImage(file="./img/schemat.png")
         self.canvas.create_image(0,0,image=self.photo_of_schema, anchor="nw")
         self.schema_frame.mainloop()
-
-class Model:
-    pass        
-   
