@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from interface import Interface
 
+#stworzenie okna
 class App(tk.Tk):
 
     def __init__(self, model):

@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import BOTH, Canvas, ttk, Toplevel
-import math
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -17,18 +16,20 @@ class Interface(tk.Frame):
 
         super().__init__()
 
+        #zadeklarowanie naszego modelu
         self.model = model
+        
         #pobudzenie
         self.radio_var = tk.StringVar()
         self.label_response = ttk.Label(self, text="Pobudzenie:", font=("Arial", 16))
         self.label_response.grid(row=1, column=0, columnspan=3)
         self.radio_sin = ttk.Radiobutton(self, text="Sinusoidalne", variable=self.radio_var, value="sinus")
         self.radio_rectangle = ttk.Radiobutton(self, text="Prostokątne", variable=self.radio_var, value="prostokat")
-        self.radio_unit = ttk.Radiobutton(self, text="Jednostkowe", variable=self.radio_var, value="jednostkowe")
+        self.radio_triangle = ttk.Radiobutton(self, text="Trójkątne", variable=self.radio_var, value="trojkatne")
         self.radio_var.set("sin")
         self.radio_sin.grid(row=2, column=0)
         self.radio_rectangle.grid(row=2, column=1)
-        self.radio_unit.grid(row=2, column=2, padx=15)
+        self.radio_triangle.grid(row=2, column=2, padx=15)
 
         #parametr k1
         self.label_k1 = ttk.Label(self, text="Podaj wartość k1", font=("Arial", 14))
@@ -62,27 +63,77 @@ class Interface(tk.Frame):
         self.entry_b.grid(row=8, column=1)
         self.b_var.set("1")
 
-        #wzor rownania
+        #amplituda pobudzenia
+        self.label_amp = ttk.Label(self, text="      Podaj\n  amplitude\n pobudzenia:", font=("Arial", 12))
+        self.label_amp.grid(row=9, column=0, columnspan=1)
+        self.Amp_var = tk.StringVar()
+        self.entry_amp = tk.Entry(self, width=10, text=self.Amp_var)
+        self.entry_amp.grid(row=9, column = 1)
+        self.Amp_var.set("1")
+        
+        #warunki poczatkowe
+        #x(0)
+        self.label_x_zero = ttk.Label(self, text="Podaj wartość x(0)", font=("Arial",14))
+        self.label_x_zero.grid(row=10, column=0, columnspan=1)
+        self.x_zero_var = tk.StringVar()
+        self.entry_x_zero = tk.Entry(self, width=10, text=self.x_zero_var)
+        self.entry_x_zero.grid(row=10, column=1)
+        self.x_zero_var.set("1")
+
+        #x(0)'
+        self.label_x_zero_higher = ttk.Label(self, text="Podaj wartość x(0)'", font=("Arial",14))
+        self.label_x_zero_higher.grid(row=11, column=0, columnspan=1)
+        self.x_zero_higher_var = tk.StringVar()
+        self.entry_x_zero_higher = tk.Entry(self, width=10, text=self.x_zero_higher_var)
+        self.entry_x_zero_higher.grid(row=11, column=1)
+        self.x_zero_higher_var.set("1")
+
+        #schemat projetku
         self.button_show_equation = ttk.Button(self, text = "Pokaż schemat projektu", command=lambda: self.show_schema())
-        self.button_show_equation.grid(row=10, column=1)
+        self.button_show_equation.grid(row=12, column=1)
 
         #Start symulacji
         self.button_simulation = ttk.Button(self, text="Symulacja", command=lambda: self.simulation())
-        self.button_simulation.grid(row=11, column=1)
+        self.button_simulation.grid(row=13, column=1)
 
         #wykres
         self.f = Figure(figsize=(10,8), dpi=100)
         self.a = self.f.add_subplot(111)
+        self.a.set_xlabel("Czas")
+        self.a.set_ylabel("Wartość")
         self.canvas = FigureCanvasTkAgg(self.f, self)
         self.toolbar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
         self.toolbar.update()
         self.toolbar.grid(row=11, column=3)
         self.canvas.get_tk_widget().grid(row=1, column=3, rowspan=10)
 
+    #funkcja wykreslajaca wyniki
+    def animate_plot(self):
+
+        self.a.clear()
+        self.a.set_xlabel("Czas")
+        self.a.set_ylabel("Wartość")
+        #self.a.plot(self.model.t, self.model.x_euler, "#00FF00", label="Położenie - Euler")
+        #self.a.plot(self.model.t, self.model.v_euler, "#FF0000", label="Prędkość - Euler")
+        self.a.plot(self.model.t, self.model.x_rg4, "#33B8FF", label="Położenie - Runge-Kutty")
+        self.a.plot(self.model.t, self.model.v_rg4, "#EC00FE", label="Prędkość - Runge-Kutty")
+        self.a.legend(loc=2, bbox_to_anchor=(0.22,1.1,), ncol=3, borderaxespad=0)
+
+    #pobranie zmiennych i wykreslenie wynikow
     def simulation(self):
 
+        self.model.update_model(var_k1 = float(self.k1_var.get()),
+        var_k2 = float(self.k2_var.get()),
+        var_m = float(self.m_var.get()),
+        var_b = float(self.b_var.get()),
+        var_amp = float(self.Amp_var.get()), 
+        var_x_zero = float(self.x_zero_var.get()),
+        var_x_zero_higher = float(self.x_zero_higher_var.get()),
+        pobudzenie = self.radio_var.get())
+        self.animate_plot()
         self.f.canvas.draw()
 
+    #pokazanie schematu projektu w nowym oknie
     def show_schema(self):
 
         self.schema_frame = Toplevel(self)
@@ -92,3 +143,4 @@ class Interface(tk.Frame):
         self.photo_of_schema = tk.PhotoImage(file="./img/schemat.png")
         self.canvas.create_image(0,0,image=self.photo_of_schema, anchor="nw")
         self.schema_frame.mainloop()
+    
