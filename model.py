@@ -74,21 +74,22 @@ class Model:
     def rk4(self):
         self.x_rg4[0] = self.x_zero
         self.v_rg4[0] = self.x_zero_higher
-        for i in range(0, self.number_of_iterations):
-            dx1 = self.h*self.v_rg4[i-1]
-            dv1 = self.h*(((self.k1+self.k2)*self.x_rg4[i-1])/self.m +(self.u[i-1]-self.b*self.v_rg4[i-1])/self.m)
+        for i in range(1, self.number_of_iterations):
+            
+            dx1 = self.h*self.v_rg4[0]
+            dv1 = self.h*(((self.k1+self.k2)*self.x_rg4[0])/self.m +(self.u[i-1]-self.b*self.v_rg4[i-1])/self.m)
 
             dx2 = self.h*(self.v_rg4[i-1]+dv1/2)
-            dv2 = (self.h+self.h/2)*(((self.k1+self.k2)*(self.x_rg4[i-1]+dx1/2))/self.m +(self.u[i-1]-self.b*(self.v_rg4[i-1]+dv1/2))/self.m)
+            dv2 = (self.h+self.h/2)*(((self.k1+self.k2)*(self.x_rg4[0]+dx1/2))/self.m +(self.u[i-1]-self.b*(self.v_rg4[i-1]+dv1/2))/self.m)
             
             dx3 =self.h*(self.v_rg4[i-1]+dv2/2)
-            dv3 =(self.h+self.h/2)*(((self.k1+self.k2)*(self.x_rg4[i-1]+dx2/2))/self.m +(self.u[i-1]-self.b*(self.v_rg4[i-1]+dv2/2))/self.m)
+            dv3 =(self.h+self.h/2)*(((self.k1+self.k2)*(self.x_rg4[0]+dx2/2))/self.m +(self.u[i-1]-self.b*(self.v_rg4[0]+dv2/2))/self.m)
 
             dx4 = self.h*(self.v_rg4[i-1]+dv3)
-            dv4 =(self.h+self.h)*(((self.k1+self.k2)*(self.x_rg4[i-1]+dx3))/self.m +(self.u[i-1]-self.b*(self.v_rg4[i-1]+dv3))/self.m)
+            dv4 =(self.h+self.h)*(((self.k1+self.k2)*(self.x_rg4[0]+dx3))/self.m +(self.u[i-1]-self.b*(self.v_rg4[i-1]+dv3))/self.m)
             
-            dx = (dx1 + 2*dx2 + 2*dx3 +dx4)/6
-            dv = (dv1 + 2*dv2 + 2*dv3 +dv4)/6
+            dx = (dx1 + 2*dx2 + 2*dx3 +dx4)/6.
+            dv = (dv1 + 2*dv2 + 2*dv3 +dv4)/6.
 
             self.x_rg4[i] = self.x_rg4[i-1] + dx
             self.v_rg4[i] = self.v_rg4[i-1] + dv

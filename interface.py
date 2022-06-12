@@ -78,7 +78,7 @@ class Interface(tk.Frame):
         self.x_zero_var = tk.StringVar()
         self.entry_x_zero = tk.Entry(self, width=10, text=self.x_zero_var)
         self.entry_x_zero.grid(row=10, column=1)
-        self.x_zero_var.set("1")
+        self.x_zero_var.set("0")
 
         #x(0)'
         self.label_x_zero_higher = ttk.Label(self, text="Podaj wartość x(0)'", font=("Arial",14))
@@ -86,7 +86,7 @@ class Interface(tk.Frame):
         self.x_zero_higher_var = tk.StringVar()
         self.entry_x_zero_higher = tk.Entry(self, width=10, text=self.x_zero_higher_var)
         self.entry_x_zero_higher.grid(row=11, column=1)
-        self.x_zero_higher_var.set("1")
+        self.x_zero_higher_var.set("0")
 
         #schemat projetku
         self.button_show_equation = ttk.Button(self, text = "Pokaż schemat projektu", command=lambda: self.show_schema())
@@ -113,8 +113,8 @@ class Interface(tk.Frame):
         self.a.clear()
         self.a.set_xlabel("Czas")
         self.a.set_ylabel("Wartość")
-        #self.a.plot(self.model.t, self.model.x_euler, "#00FF00", label="Położenie - Euler")
-        #self.a.plot(self.model.t, self.model.v_euler, "#FF0000", label="Prędkość - Euler")
+        self.a.plot(self.model.t, self.model.x_euler, "#00FF00", label="Położenie - Euler")
+        self.a.plot(self.model.t, self.model.v_euler, "#FF0000", label="Prędkość - Euler")
         self.a.plot(self.model.t, self.model.x_rg4, "#33B8FF", label="Położenie - Runge-Kutty")
         self.a.plot(self.model.t, self.model.v_rg4, "#EC00FE", label="Prędkość - Runge-Kutty")
         self.a.legend(loc=2, bbox_to_anchor=(0.22,1.1,), ncol=3, borderaxespad=0)
